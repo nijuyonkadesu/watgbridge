@@ -1,7 +1,7 @@
 { lib
 , buildGoApplication
-, enableFfmpeg ? true
-, enableLibWebPTools ? true
+, enableFfmpeg ? false 
+, enableLibWebPTools ? false
 , ffmpeg
 , libwebp
 , nix-filter

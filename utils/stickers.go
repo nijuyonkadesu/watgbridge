@@ -15,8 +15,10 @@ import (
 
 	"watgbridge/state"
 
-	"github.com/watgbridge/tgsconverter/libtgsconverter"
-	"github.com/watgbridge/webp"
+	"github.com/Benau/tgsconverter/libtgsconverter"
+	"github.com/kolesa-team/go-webp/decoder"
+	"github.com/kolesa-team/go-webp/encoder"
+	"github.com/kolesa-team/go-webp/webp"
 	"go.uber.org/zap"
 )
 
@@ -94,9 +96,14 @@ func WebmConvertToWebp(webmStickerData []byte, scale, pad string, updateId int64
 }
 
 func WebpImagePad(inputData []byte, wPad, hPad int, updateId int64) ([]byte, error) {
-	inputImage, err := webp.DecodeRGB(inputData)
+	webpDecoder, err := decoder.NewDecoder(bytes.NewBuffer(inputData), &decoder.Options{NoFancyUpsampling: true})
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode web image: %w", err)
+		return nil, fmt.Errorf("failed to create a webp decoder: %s", err)
+	}
+
+	inputImage, err := webpDecoder.Decode()
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode webp image: %s", err)
 	}
 
 	var (
@@ -105,21 +112,26 @@ func WebpImagePad(inputData []byte, wPad, hPad int, updateId int64) ([]byte, err
 	)
 
 	outputWidth := inputImage.Bounds().Dx() + wPad
-	outputHeight := inputImage.Bounds().Dx() + hPad
+	outputHeight := inputImage.Bounds().Dy() + hPad
 
 	outputImage := image.NewRGBA(image.Rect(0, 0, outputWidth, outputHeight))
 	draw.Draw(outputImage, image.Rect(wOffset, hOffset, outputWidth-wOffset, outputHeight-hOffset), inputImage, image.Point{}, draw.Src)
 
-	outputBytes, err := webp.EncodeRGB(outputImage, 100)
+	encoderOptions, err := encoder.NewLossyEncoderOptions(encoder.PresetDefault, 100)
 	if err != nil {
-		return nil, fmt.Errorf("failed to encode padded data into Webp: %w", err)
+		return nil, fmt.Errorf("failed to initialize encoder options: %s", err)
 	}
 
-	if outputData, err := WebpWriteExifData(outputBytes, updateId); err == nil {
+	var outputBuffer bytes.Buffer
+	if err = webp.Encode(&outputBuffer, outputImage, encoderOptions); err != nil {
+		return nil, fmt.Errorf("failed to encode into webp: %s", err)
+	}
+
+	if outputData, err := WebpWriteExifData(outputBuffer.Bytes(), updateId); err == nil {
 		return outputData, nil
 	}
 
-	return outputBytes, nil
+	return outputBuffer.Bytes(), nil
 }
 
 func AnimatedWebpConvertToGif(inputData []byte, updateId string) ([]byte, error) {
