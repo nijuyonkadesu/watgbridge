@@ -336,7 +336,7 @@ func TgSendToWhatsApp(b *gotgbot.Bot, c *ext.Context,
 			msg, err := TgReplyTextByContext(b, c, "Successfully sent", revokeKeyboard, cfg.Telegram.SilentConfirmation)
 			if err == nil {
 				go func(_b *gotgbot.Bot, _m *gotgbot.Message) {
-					time.Sleep(15 * time.Second)
+					time.Sleep(5 * time.Second)
 					_b.DeleteMessage(_m.Chat.Id, _m.MessageId, &gotgbot.DeleteMessageOpts{})
 				}(b, msg)
 			}
@@ -419,7 +419,7 @@ func TgSendToWhatsApp(b *gotgbot.Bot, c *ext.Context,
 			msg, err := TgReplyTextByContext(b, c, "Successfully sent", revokeKeyboard, cfg.Telegram.SilentConfirmation)
 			if err == nil {
 				go func(_b *gotgbot.Bot, _m *gotgbot.Message) {
-					time.Sleep(15 * time.Second)
+					time.Sleep(5 * time.Second)
 					_b.DeleteMessage(_m.Chat.Id, _m.MessageId, &gotgbot.DeleteMessageOpts{})
 				}(b, msg)
 			}
@@ -499,7 +499,7 @@ func TgSendToWhatsApp(b *gotgbot.Bot, c *ext.Context,
 			msg, err := TgReplyTextByContext(b, c, "Successfully sent", revokeKeyboard, cfg.Telegram.SilentConfirmation)
 			if err == nil {
 				go func(_b *gotgbot.Bot, _m *gotgbot.Message) {
-					time.Sleep(15 * time.Second)
+					time.Sleep(5 * time.Second)
 					_b.DeleteMessage(_m.Chat.Id, _m.MessageId, &gotgbot.DeleteMessageOpts{})
 				}(b, msg)
 			}
@@ -582,7 +582,7 @@ func TgSendToWhatsApp(b *gotgbot.Bot, c *ext.Context,
 			msg, err := TgReplyTextByContext(b, c, "Successfully sent", revokeKeyboard, cfg.Telegram.SilentConfirmation)
 			if err == nil {
 				go func(_b *gotgbot.Bot, _m *gotgbot.Message) {
-					time.Sleep(15 * time.Second)
+					time.Sleep(5 * time.Second)
 					_b.DeleteMessage(_m.Chat.Id, _m.MessageId, &gotgbot.DeleteMessageOpts{})
 				}(b, msg)
 			}
@@ -660,7 +660,7 @@ func TgSendToWhatsApp(b *gotgbot.Bot, c *ext.Context,
 			msg, err := TgReplyTextByContext(b, c, "Successfully sent", revokeKeyboard, cfg.Telegram.SilentConfirmation)
 			if err == nil {
 				go func(_b *gotgbot.Bot, _m *gotgbot.Message) {
-					time.Sleep(15 * time.Second)
+					time.Sleep(5 * time.Second)
 					_b.DeleteMessage(_m.Chat.Id, _m.MessageId, &gotgbot.DeleteMessageOpts{})
 				}(b, msg)
 			}
@@ -738,7 +738,7 @@ func TgSendToWhatsApp(b *gotgbot.Bot, c *ext.Context,
 			msg, err := TgReplyTextByContext(b, c, "Successfully sent", revokeKeyboard, cfg.Telegram.SilentConfirmation)
 			if err == nil {
 				go func(_b *gotgbot.Bot, _m *gotgbot.Message) {
-					time.Sleep(15 * time.Second)
+					time.Sleep(5 * time.Second)
 					_b.DeleteMessage(_m.Chat.Id, _m.MessageId, &gotgbot.DeleteMessageOpts{})
 				}(b, msg)
 			}
@@ -819,7 +819,7 @@ func TgSendToWhatsApp(b *gotgbot.Bot, c *ext.Context,
 			msg, err := TgReplyTextByContext(b, c, "Successfully sent", revokeKeyboard, cfg.Telegram.SilentConfirmation)
 			if err == nil {
 				go func(_b *gotgbot.Bot, _m *gotgbot.Message) {
-					time.Sleep(15 * time.Second)
+					time.Sleep(5 * time.Second)
 					_b.DeleteMessage(_m.Chat.Id, _m.MessageId, &gotgbot.DeleteMessageOpts{})
 				}(b, msg)
 			}
@@ -939,7 +939,7 @@ func TgSendToWhatsApp(b *gotgbot.Bot, c *ext.Context,
 			msg, err := TgReplyTextByContext(b, c, "Successfully sent", revokeKeyboard, cfg.Telegram.SilentConfirmation)
 			if err == nil {
 				go func(_b *gotgbot.Bot, _m *gotgbot.Message) {
-					time.Sleep(15 * time.Second)
+					time.Sleep(5 * time.Second)
 					_b.DeleteMessage(_m.Chat.Id, _m.MessageId, &gotgbot.DeleteMessageOpts{})
 				}(b, msg)
 			}
@@ -970,7 +970,7 @@ func TgSendToWhatsApp(b *gotgbot.Bot, c *ext.Context,
 			msg, err := TgReplyTextByContext(b, c, "Successfully reacted", nil, cfg.Telegram.SilentConfirmation)
 			if err == nil {
 				go func(_b *gotgbot.Bot, _m *gotgbot.Message) {
-					time.Sleep(15 * time.Second)
+					time.Sleep(5 * time.Second)
 					_b.DeleteMessage(_m.Chat.Id, _m.MessageId, &gotgbot.DeleteMessageOpts{})
 				}(b, msg)
 			}
@@ -1012,7 +1012,7 @@ func TgSendToWhatsApp(b *gotgbot.Bot, c *ext.Context,
 			msg, err := TgReplyTextByContext(b, c, "Successfully sent", revokeKeyboard, cfg.Telegram.SilentConfirmation)
 			if err == nil {
 				go func(_b *gotgbot.Bot, _m *gotgbot.Message) {
-					time.Sleep(15 * time.Second)
+					time.Sleep(5 * time.Second)
 					_b.DeleteMessage(_m.Chat.Id, _m.MessageId, &gotgbot.DeleteMessageOpts{})
 				}(b, msg)
 			}
