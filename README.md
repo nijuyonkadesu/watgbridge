@@ -56,3 +56,46 @@ PRs are welcome :)
 - It is recommended to restart the bot after every few hours becuase WhatsApp likes to disconnect a lot. So a sample Systemd service file has been provided (`watgbridge.service.sample`). Edit the `User` and `ExecStart` according to your setup:
     - If you do not have local bot API server, remove `tgbotapi.service` from the `After` key in `Unit` section.
     - This service file will restart the bot every 24 hours
+
+
+
+# Systemd Service
+
+- place the file in `etc/systemd/system/` with your user scope
+- have to check if telegram-bot-api.service's /data & /temp 770 permission
+- start your database
+
+- TODO: watgbride dockerfile, FROM scratch, copy the binary, mount tg volumes
+- so now it's isolated and doesn't matter if runs in root
+ 
+# Playground
+
+```sh
+sudo nvim /etc/containers/homelab/portable-postgres.env
+sudo chmod 770 /etc/containers/homelab/portable-postgres.env
+sudo cp portable-postgres.container /etc/containers/systemd/
+/usr/lib/systemd/system-generators/podman-system-generator --dryrun
+
+sudo podman ps
+
+# cloning postgres
+pg_dump -U guts -h localhost -p 5432 watgbridge | psql -U guts -h ustable -d watgbridge
+scp -P 8022 u0_a342@watgtunnel:~/watgbridge/wawebstore.db ~/redacted/watgbridge
+scp -P 8022 u0_a342@watgtunnel:~/watgbridge/config.yaml ~/redacted/watgbridge
+
+# copy watgbridge.service
+sudo cp watgbridge.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable watgbridge.service
+sudo systemctl start watgbridge.service
+
+journalctl -u watgbridge.service -f
+```
+
+### portable-postgres.env
+
+```
+POSTGRES_USER=uname
+POSTGRES_PASSWORD=pass
+POSTGRES_DB=watgbridge
+```
