@@ -123,39 +123,34 @@ func WebpImagePad(inputData []byte, wPad, hPad int, updateId int64) ([]byte, err
 }
 
 func AnimatedWebpConvertToGif(inputData []byte, updateId string) ([]byte, error) {
-	var (
-		logger = state.State.Logger
-
-		currPath   = path.Join("downloads", updateId)
-		inputPath  = path.Join(currPath, "input.webp")
-		outputPath = path.Join(currPath, "output.gif")
-	)
+	logger := state.State.Logger
 	defer logger.Sync()
 
-	if err := os.MkdirAll(currPath, os.ModePerm); err != nil {
-		return nil, err
-	}
-	defer os.RemoveAll(currPath)
-
-	if err := os.WriteFile(inputPath, inputData, os.ModePerm); err != nil {
-		return nil, err
-	}
-
 	cmd := exec.Command("convert",
-		inputPath,
+		"webp:-",
 		"-loop", "0",
 		"-dispose", "previous",
-		outputPath,
+		"gif:-",
 	)
 
-	if err := cmd.Run(); err != nil {
-		logger.Debug("failed to run convert command",
+	var outputBuf, stderr bytes.Buffer
+	cmd.Stdin = bytes.NewReader(inputData)
+	cmd.Stdout = &outputBuf
+	cmd.Stderr = &stderr
+
+	if err := cmd.Start(); err != nil {
+		return nil, fmt.Errorf("failed to start convert command: %w", err)
+	}
+
+	if err := cmd.Wait(); err != nil {
+		logger.Debug("convert command failed",
 			zap.Error(err),
+			zap.String("stderr", stderr.String()),
 		)
 		return nil, err
 	}
 
-	return os.ReadFile(outputPath)
+	return outputBuf.Bytes(), nil
 }
 
 func WebpWriteExifData(inputData []byte, updateId int64) ([]byte, error) {
