@@ -959,7 +959,7 @@ func TgSendToWhatsApp(b *gotgbot.Bot, c *ext.Context,
 	} else if msgToForward.Text != "" {
 
 		if emojis := gomoji.CollectAll(msgToForward.Text); isReply && len(emojis) == 1 && gomoji.RemoveEmojis(msgToForward.Text) == "" {
-			_, err := waClient.SendMessage(context.Background(), waChatJID, &waE2E.Message{
+			sentMsg, err := waClient.SendMessage(context.Background(), waChatJID, &waE2E.Message{
 				ReactionMessage: &waE2E.ReactionMessage{
 					Text:              proto.String(msgToForward.Text),
 					SenderTimestampMS: proto.Int64(time.Now().UnixMilli()),
@@ -973,17 +973,8 @@ func TgSendToWhatsApp(b *gotgbot.Bot, c *ext.Context,
 			if err != nil {
 				return TgReplyWithErrorByContext(b, c, "Failed to send reaction to WhatsApp", err)
 			}
-			if cfg.Telegram.ConfirmationType != "none" {
-				msg, err := TgReplyTextByContext(b, c, "Successfully reacted", nil, cfg.Telegram.SilentConfirmation)
-
-				if err == nil {
-					go func(_b *gotgbot.Bot, _m *gotgbot.Message) {
-						time.Sleep(15 * time.Second)
-						_b.DeleteMessage(_m.Chat.Id, _m.MessageId, &gotgbot.DeleteMessageOpts{})
-					}(b, msg)
-				}
-				return err
-			}
+			revokeKeyboard := TgMakeRevokeKeyboard(sentMsg.ID, waChatJID.String(), false)
+			SendMessageConfirmation(b, c, cfg, msgToForward, revokeKeyboard)
 			return err
 		}
 
@@ -1101,11 +1092,21 @@ func SendMessageConfirmation(
 ) {
 	switch cfg.Telegram.ConfirmationType {
 	case "emoji":
-		b.SetMessageReaction(
+		_, err := b.SetMessageReaction(
 			msgToForward.Chat.Id,
 			msgToForward.MessageId,
 			&gotgbot.SetMessageReactionOpts{Reaction: []gotgbot.ReactionType{gotgbot.ReactionTypeEmoji{Emoji: "👍"}}},
 		)
+		if err == nil {
+			go func(_b *gotgbot.Bot, _m *gotgbot.Message) {
+				time.Sleep(15 * time.Second)
+				b.SetMessageReaction(
+					msgToForward.Chat.Id,
+					msgToForward.MessageId,
+					&gotgbot.SetMessageReactionOpts{Reaction: []gotgbot.ReactionType{}},
+				)
+			}(b, msgToForward)
+		}
 	case "text":
 		msg, err := TgReplyTextByContext(b, c, "Successfully sent", revokeKeyboard, cfg.Telegram.SilentConfirmation)
 		if err == nil {
