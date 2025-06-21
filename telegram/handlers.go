@@ -140,10 +140,14 @@ func AddTelegramHandlers() {
 }
 
 func BridgeTelegramToWhatsAppHandler(b *gotgbot.Bot, c *ext.Context) error {
+	// TODO: move to a separate group handler - refer existing bots though
 	if !utils.TgUpdateIsAuthorized(b, c) {
 		return nil
 	}
 
+	// TODO: why do we manually check for updates here??
+	// ehh?: Before I forward this Telegram message to WhatsApp, check if this message would be handled by any of my registered commands. If so, do nothing and let those handlers do their job.
+	// ehh... Cleanup: Remove repitition of telegram commands
 	for _, command := range commands {
 		if command.command.CheckUpdate(b, c) {
 			return nil
@@ -159,6 +163,9 @@ func BridgeTelegramToWhatsAppHandler(b *gotgbot.Bot, c *ext.Context) error {
 	var stanzaID, participantID, waChatID string
 	var err error
 
+	// TODO: move to another group handler - possibly a middleware
+	// TODO: populate data added by middleware into *ext.Context.Data field for other Handlers to access
+	// These if - else checks whether the bot runs in a grp with topics created or not and finds waChatId in either cases
 	if msgToReplyTo != nil && msgToReplyTo.ForumTopicCreated == nil {
 		stanzaID, participantID, waChatID, err = database.MsgIdGetWaFromTg(c.EffectiveChat.Id, msgToReplyTo.MessageId, msgToForward.MessageThreadId)
 		if err != nil {
@@ -245,6 +252,7 @@ func GetWhatsAppGroupsHandler(b *gotgbot.Bot, c *ext.Context) error {
 			groupNum+1, html.EscapeString(group.Name),
 			html.EscapeString(group.JID.String()))
 
+		// TODO: do we respect message limits here properly?
 		if len(outputString) >= 1800 {
 			utils.TgReplyTextByContext(b, c, outputString, nil, false)
 			time.Sleep(500 * time.Millisecond)
@@ -355,6 +363,7 @@ func UpdateAndRestartHandler(b *gotgbot.Bot, c *ext.Context) error {
 	}
 
 	os.Setenv("WATG_IS_RESTARTED", "1")
+	// TODO: check why these are needed...
 	os.Setenv("WATG_CHAT_ID", fmt.Sprint(c.EffectiveChat.Id))
 	os.Setenv("WATG_MESSAGE_ID", fmt.Sprint(c.EffectiveMessage.MessageId))
 

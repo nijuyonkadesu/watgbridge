@@ -42,7 +42,6 @@ This project is in no way affiliated with WhatsApp or Telegram. Using this can a
 
 PRs are welcome :)
 
-
 ## Installation
 
 - Make a supergroup (enable message history for new members) with topics enabled
@@ -54,10 +53,8 @@ PRs are welcome :)
 - Execute the binary by running `./watgbridge`
 - On first run, it will show QR code for logging into WhatsApp that can by scanned by the WhatsApp app in `Linked devices`
 - It is recommended to restart the bot after every few hours becuase WhatsApp likes to disconnect a lot. So a sample Systemd service file has been provided (`watgbridge.service.sample`). Edit the `User` and `ExecStart` according to your setup:
-    - If you do not have local bot API server, remove `tgbotapi.service` from the `After` key in `Unit` section.
-    - This service file will restart the bot every 24 hours
-
-
+  - If you do not have local bot API server, remove `tgbotapi.service` from the `After` key in `Unit` section.
+  - This service file will restart the bot every 24 hours
 
 # Systemd Service
 
@@ -67,7 +64,7 @@ PRs are welcome :)
 
 - TODO: watgbride dockerfile, FROM scratch, copy the binary, mount tg volumes
 - so now it's isolated and doesn't matter if runs in root
- 
+
 # Playground
 
 ```sh
@@ -99,3 +96,62 @@ POSTGRES_USER=uname
 POSTGRES_PASSWORD=pass
 POSTGRES_DB=watgbridge
 ```
+
+### Dependencies
+
+1. imagemagick
+2. webp (webpmux)
+3. git
+4. ffmpeg
+
+### Before May End
+
+[TODO] Telegram handler
+[TODO] Whatsapp handler
+
+[TODO] understand database, gorm's features, and migration
+[TODO] Fix live loc (maybe use with config debug mode?)
+[TODO] Create a PR
+
+[TODO] understand modules
+[TODO] TgSendToWhatsApp - separate all media handlers into a separate individual units (not more than 300 lines in each file)
+[TODO] how did memory doubled? - https://t.me/WaTgBridge/11036
+
+#### Suspected bugs
+
+[TODO] Fix audio issue
+[TODO] unlinkthread - bug?
+[TODO] 2x memory consumption for big media files
+
+# Improvements:
+
+what's a stanza ID? maybe, try to figure out data model tomorrow?
+[TODO] what's a stanza ID? maybe, try to figure out data model tomorrow?
+[TODO] what's a participantID?
+[TODO] dam... `ClearMessageIdPairsHistoryHandler` really deletes everything...
+[TODO] check does bot receives all updates from whatsapp or not - find it's impl
+[TODO] better logs, multiline tracebacks (do not mix with logs?)
+[TODO] cache for recent stickers?
+[TODO] route bot messages
+[TODO] move sqlite to postgres
+[TODO] backup sql
+[TODO] 300kb (time) sticker got blew up to 3.4MB, and literally minutes of processing. understand what's happening and optimize them
+[TODO] propagate quotes
+
+2025-06-21
+
+1. dispatcher.AddGroupHandlers
+
+   - (-1) for middleware, is allowed first of all
+   - (0) once allowed - then check for admin? or check for command? - I think it's not configured in the best way in watgbride??
+   - (10+) for application logic??
+
+2. BridgeTelegramToWhatsAppHandler.TgUpdateIsAuthorized - move this as a middleware instead of checking in telegram utils - dayum, 19 references.
+
+## NewModules
+
+1. demotivator module [Frame + centralized caption]
+   - add russian translation for authentic flavour
+2. media download module - check that go mod
+3. regex substitute module
+4. LLM Interaction Module (with #llm flag or smth) - save llms and choose based on callback or smth
