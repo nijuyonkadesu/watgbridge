@@ -974,6 +974,7 @@ func MessageFromOthersEventHandler(text string, v *events.Message, isEdited bool
 						MessageId: replyToMsgId,
 					},
 					MessageThreadId: threadId,
+					ReplyMarkup:     replyMarkup,
 				})
 				if sentMsg.MessageId != 0 {
 					database.MsgIdAddNewPair(msgId, v.Info.MessageSource.Sender.String(), v.Info.Chat.String(),
@@ -988,6 +989,7 @@ func MessageFromOthersEventHandler(text string, v *events.Message, isEdited bool
 					MessageId: replyToMsgId,
 				},
 				MessageThreadId: threadId,
+				ReplyMarkup:     replyMarkup,
 			})
 			if sentMsg.MessageId != 0 {
 				database.MsgIdAddNewPair(msgId, v.Info.MessageSource.Sender.String(), v.Info.Chat.String(),
