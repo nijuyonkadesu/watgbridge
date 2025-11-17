@@ -106,8 +106,6 @@ POSTGRES_DB=watgbridge
 
 ### Before May End
 
-[TODO] Telegram handler
-[TODO] Whatsapp handler
 
 [TODO] understand database, gorm's features, and migration
 [TODO] Fix live loc (maybe use with config debug mode?)
