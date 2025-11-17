@@ -1485,6 +1485,10 @@ func UserAboutEventHandler(v *events.UserAbout) {
 		return
 	}
 
+	status := html.EscapeString(v.Status)
+	if status != "" {
+		return
+	}
 	updateMessageText := "User's about message was updated"
 	if time.Since(v.Timestamp).Seconds() > 60 {
 		updateMessageText += fmt.Sprintf(
@@ -1499,7 +1503,7 @@ func UserAboutEventHandler(v *events.UserAbout) {
 		updateMessageText += ":\n\n"
 	}
 
-	updateMessageText += fmt.Sprintf("<code>%s</code>", html.EscapeString(v.Status))
+	updateMessageText += fmt.Sprintf("<code>%s</code>", status)
 
 	tgBot.SendMessage(
 		cfg.Telegram.TargetChatID,
@@ -1640,7 +1644,7 @@ func PictureEventHandler(v *events.Picture) {
 				return
 			}
 		}
-	} else if v.JID.Server == waTypes.DefaultUserServer {
+	} else if v.JID.Server == waTypes.DefaultUserServer || v.JID.Server == waTypes.HiddenUserServer {
 		tgThreadId, err = utils.TgGetOrMakeThreadFromWa(v.JID.ToNonAD(), cfg.Telegram.TargetChatID, utils.WaGetContactName(v.JID.ToNonAD()))
 		if err != nil {
 			logger.Warn(
@@ -1695,6 +1699,7 @@ func PictureEventHandler(v *events.Picture) {
 		logger.Warn(
 			"Received Picture event for unknown JID type",
 			zap.String("jid", v.JID.String()),
+			zap.String("type", v.JID.Server),
 		)
 	}
 }
