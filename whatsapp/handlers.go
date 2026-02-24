@@ -1626,6 +1626,7 @@ func PictureEventHandler(v *events.Picture) {
 			}
 		} else {
 			pictureInfo, err := waClient.GetProfilePictureInfo(
+				context.Background(),
 				v.JID,
 				&whatsmeow.GetProfilePictureParams{
 					Preview: false,
@@ -1677,6 +1678,7 @@ func PictureEventHandler(v *events.Picture) {
 			}
 		} else {
 			pictureInfo, err := waClient.GetProfilePictureInfo(
+				context.Background(),
 				v.JID,
 				&whatsmeow.GetProfilePictureParams{
 					Preview: false,
