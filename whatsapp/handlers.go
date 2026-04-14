@@ -48,8 +48,8 @@ func WhatsAppEventHandler(evt interface{}) {
 	case *events.PushName:
 		PushNameEventHandler(v)
 
-	case *events.UserAbout:
-		UserAboutEventHandler(v)
+	// case *events.UserAbout:
+	//	UserAboutEventHandler(v)
 
 	case *events.CallOffer:
 		CallOfferEventHandler(v)
@@ -1656,7 +1656,7 @@ func PictureEventHandler(v *events.Picture) {
 				return
 			}
 		}
-	} else if v.JID.Server == waTypes.DefaultUserServer {
+	} else if v.JID.Server == waTypes.DefaultUserServer || v.JID.Server == waTypes.HiddenUserServer{
 		tgThreadId, err = utils.TgGetOrMakeThreadFromWa(v.JID.ToNonAD(), cfg.Telegram.TargetChatID, utils.WaGetContactName(v.JID.ToNonAD()))
 		if err != nil {
 			logger.Warn(
