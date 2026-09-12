@@ -645,6 +645,10 @@ func TgSendToWhatsApp(b *gotgbot.Bot, c *ext.Context,
 		if err != nil {
 			return TgReplyWithErrorByContext(b, c, "Failed to download animation from Telegram", err)
 		}
+		animationBytes, animationMetadata, err := prepareTelegramAnimationForWhatsApp(animationBytes)
+		if err != nil {
+			return TgReplyWithErrorByContext(b, c, "Failed to prepare animation for WhatsApp", err)
+		}
 
 		uploadedAnimation, err := waClient.Upload(context.Background(), animationBytes, whatsmeow.MediaVideo)
 		if err != nil {
@@ -655,22 +659,21 @@ func TgSendToWhatsApp(b *gotgbot.Bot, c *ext.Context,
 
 		msgToSend := &waE2E.Message{
 			VideoMessage: &waE2E.VideoMessage{
-				Caption:        proto.String(formattedText),
-				URL:            proto.String(uploadedAnimation.URL),
-				DirectPath:     proto.String(uploadedAnimation.DirectPath),
-				MediaKey:       uploadedAnimation.MediaKey,
-				Mimetype:       proto.String(msgToForward.Animation.MimeType),
-				GifPlayback:    proto.Bool(true),
-				FileEncSHA256:  uploadedAnimation.FileEncSHA256,
-				FileSHA256:     uploadedAnimation.FileSHA256,
-				FileLength:     proto.Uint64(uint64(len(animationBytes))),
-				ViewOnce:       proto.Bool(msgToForward.HasProtectedContent || (msgToForward.HasMediaSpoiler && cfg.Telegram.SpoilerViewOnce)),
-				Height:         proto.Uint32(uint32(msgToForward.Animation.Height)),
-				Width:          proto.Uint32(uint32(msgToForward.Animation.Width)),
-				Seconds:        proto.Uint32(uint32(msgToForward.Animation.Duration)),
-				GifAttribution: waE2E.VideoMessage_TENOR.Enum(),
-				JPEGThumbnail:  thumbBytes,
-				ContextInfo:    &waE2E.ContextInfo{},
+				Caption:       proto.String(formattedText),
+				URL:           proto.String(uploadedAnimation.URL),
+				DirectPath:    proto.String(uploadedAnimation.DirectPath),
+				MediaKey:      uploadedAnimation.MediaKey,
+				Mimetype:      proto.String("video/mp4"),
+				GifPlayback:   proto.Bool(true),
+				FileEncSHA256: uploadedAnimation.FileEncSHA256,
+				FileSHA256:    uploadedAnimation.FileSHA256,
+				FileLength:    proto.Uint64(uint64(len(animationBytes))),
+				ViewOnce:      proto.Bool(msgToForward.HasProtectedContent || (msgToForward.HasMediaSpoiler && cfg.Telegram.SpoilerViewOnce)),
+				Height:        proto.Uint32(animationMetadata.height),
+				Width:         proto.Uint32(animationMetadata.width),
+				Seconds:       proto.Uint32(animationMetadata.seconds),
+				JPEGThumbnail: thumbBytes,
+				ContextInfo:   &waE2E.ContextInfo{},
 			},
 		}
 		if isReply {

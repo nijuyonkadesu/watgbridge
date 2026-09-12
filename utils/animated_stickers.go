@@ -200,7 +200,7 @@ func encodeRGBAAnimationToWebM(animation *decodedWebPAnimation, frameIndexes []i
 		ffmpegExec = "ffmpeg"
 	}
 
-	outputFile, outputPath, extraFiles, cleanup, err := newSeekableAnimationOutput()
+	outputFile, outputPath, extraFiles, cleanup, err := newSeekableMediaFile("webm", 3)
 	if err != nil {
 		return nil, "", fmt.Errorf("failed to create seekable WEBM output: %w", err)
 	}

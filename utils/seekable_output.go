@@ -2,8 +2,8 @@ package utils
 
 import "os"
 
-func newTemporaryAnimationOutput() (*os.File, string, []*os.File, func(), error) {
-	outputFile, err := os.CreateTemp("", "watgbridge-sticker-*.webm")
+func newTemporaryMediaFile(extension string) (*os.File, string, []*os.File, func(), error) {
+	outputFile, err := os.CreateTemp("", "watgbridge-media-*."+extension)
 	if err != nil {
 		return nil, "", nil, nil, err
 	}

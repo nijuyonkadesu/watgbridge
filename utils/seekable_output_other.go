@@ -4,6 +4,6 @@ package utils
 
 import "os"
 
-func newSeekableAnimationOutput() (*os.File, string, []*os.File, func(), error) {
-	return newTemporaryAnimationOutput()
+func newSeekableMediaFile(extension string, _ int) (*os.File, string, []*os.File, func(), error) {
+	return newTemporaryMediaFile(extension)
 }
