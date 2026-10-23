@@ -61,6 +61,11 @@ func TgGetOrMakeThreadFromWa_String(waChatIdString string, tgChatId int64, threa
 	}
 
 	if !threadFound {
+		// TODO: find the right wa method for this, a new group (that has teams like name in it (ugggghhh))
+		threadName = strings.TrimSpace(threadName)
+		if threadName == "" {
+			threadName = "set a topic name manually"
+		}
 		tgBot := state.State.TelegramBot
 		newForum, err := tgBot.CreateForumTopic(tgChatId, threadName, &gotgbot.CreateForumTopicOpts{})
 		if err != nil {
