@@ -185,12 +185,16 @@ func WebmConvertToWebp(webmStickerData []byte, updateId int64) ([]byte, error) {
 	return nil, fmt.Errorf("webm sticker could not be converted under WhatsApp size limit")
 }
 
-func WebpImagePad(inputData []byte, wPad, hPad int, updateId int64) ([]byte, error) {
+func WebpImagePad(inputData []byte, updateId int64) ([]byte, error) {
 	logger := state.State.Logger
 	defer logger.Sync()
+	width, height, _, err := webp.GetInfo(inputData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read WebP dimensions: %w", err)
+	}
 	cacheVariant := fmt.Sprintf("webp-pad-v1:%d:%d:%s:%s",
-		wPad,
-		hPad,
+		512-width,
+		512-height,
 		state.State.Config.WhatsApp.StickerMetadata.PackName,
 		state.State.Config.WhatsApp.StickerMetadata.AuthorName,
 	)
@@ -198,7 +202,12 @@ func WebpImagePad(inputData []byte, wPad, hPad int, updateId int64) ([]byte, err
 		return cachedData, nil
 	}
 
-	inputImage, err := webp.DecodeRGBA(inputData)
+	var inputImage *image.RGBA
+	if longest := max(width, height); longest > 512 {
+		inputImage, err = webp.DecodeRGBAToSize(inputData, width*512/longest, height*512/longest)
+	} else {
+		inputImage, err = webp.DecodeRGBA(inputData)
+	}
 	if err != nil {
 		logger.Debug("failed to decode WebP before padding",
 			zap.Int64("updateId", updateId),
@@ -208,6 +217,8 @@ func WebpImagePad(inputData []byte, wPad, hPad int, updateId int64) ([]byte, err
 	}
 
 	var (
+		wPad    = 512 - inputImage.Bounds().Dx()
+		hPad    = 512 - inputImage.Bounds().Dy()
 		wOffset = wPad / 2
 		hOffset = hPad / 2
 	)

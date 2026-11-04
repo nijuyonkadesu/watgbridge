@@ -940,17 +940,7 @@ func TgSendToWhatsApp(b *gotgbot.Bot, c *ext.Context,
 				return TgReplyWithErrorByContext(b, c, "Failed to convert WEBM sticker to WEBP sticker", err)
 			}
 		} else if !msgToForward.Sticker.IsAnimated || !msgToForward.Sticker.IsVideo {
-
-			var wPad, hPad int
-
-			if msgToForward.Sticker.Height != 512 {
-				hPad = int(512 - msgToForward.Sticker.Height)
-			}
-			if msgToForward.Sticker.Width != 512 {
-				wPad = int(512 - msgToForward.Sticker.Width)
-			}
-
-			stickerBytes, err = WebpImagePad(stickerBytes, wPad, hPad, c.UpdateId)
+			stickerBytes, err = WebpImagePad(stickerBytes, c.UpdateId)
 			if err != nil {
 				return TgReplyWithErrorByContext(b, c, "Failed to pad WEBP sticker to 512x512", err)
 			}
